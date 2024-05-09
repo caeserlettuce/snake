@@ -1,0 +1,654 @@
+ 
+:root {
+  --main-bg: #1e1e1e;
+  --main-txt: #ffffff;
+  --header-bg: #272727;
+  --scrollbar-bg: #ffffff;
+  --a-txt: #ffffff;
+  --lblue-light: #42f7f7;
+  --lblue-dark: #40c9c9;
+  --yellow-light: #f7f742;
+  --yellow-dark: #dada45;
+  --orange-light: #f78400;
+  --orange-dark: #d87708;
+  --blue-light: #0001e5;
+  --blue-dark: #0c0cc2;
+  --green-light: #42f742;
+  --green-dark: #4bda4b;
+  --red-light: #ee0004;
+  --red-dark: #cf1215;
+  --purple-light: #f742f7;
+  --purple-dark: #e03de0;
+  --ghost-light: #535353;
+  --disabled-light: #535353;
+  --disabled-dark: #464646;
+  --debug-light: #ffffff;
+  --debug-dark: #938bff;
+  --debug-check: #ff0000;
+  --background-light: #3a3a3a;
+  --background-dark: #2c2c2c;
+  --home-txt-2: #dbdbdb;
+  --button-bg: #1b70f0;
+  --button-bg-hover: #3783f5;
+  --button-red-bg: #be2a2a;
+  --button-red-bg-hover: #cf3333;
+  --divider: #3b3b3b;
+  --toggle-background: #2b2b2b;
+  --toggle-thumb: #ffffff;
+  --toggle-background-enabled: #3783f5;
+  --pause-bg: #1b1b1b;
+  --pause-bg-debug: #1b1b1b36;
+  --board-scale: calc(90vh / 20);
+  --replay-data-bg: #2e2e2e;
+  --replay-data-border: #383838;
+  --file-upload-bg: #242424;
+  --file-upload-border: #2b2b2b;
+  --file-upload-button-bg: #2b2b2b;
+  --error-txt: #ff6d6d;
+  --control-txt: #b1b1b1;
+  --control-txt2: #c0c0c0;
+  --control-key-active: #2a2a2a;
+}
+
+/* funny colour */
+
+
+@font-face {
+  src: url(assets/Roboto-Medium.ttf);
+  font-family: roboto_medium;
+}
+@font-face {
+  src: url(assets/Roboto-MediumItalic.ttf);
+  font-family: roboto_medium_italic;
+}
+@font-face {
+  src: url(assets/Roboto-Bold.ttf);
+  font-family: roboto_bold;
+}
+@font-face {
+  src: url(assets/Roboto-BoldItalic.ttf);
+  font-family: roboto_bold_italic;
+}
+@font-face {
+  src: url(assets/Roboto-Black.ttf);
+  font-family: roboto_black;
+}
+@font-face {
+  src: url(assets/Roboto-BlackItalic.ttf);
+  font-family: roboto_black_italic;
+}
+@font-face {
+  src: url(assets/UbuntuMono-Regular.ttf);
+  font-family: ubuntu_mono;
+}
+
+.push { /* pushes flexbox child to the right */
+  margin-left: auto !important;
+}
+
+/* custom styles for default elements */
+h1, h2, h3, h4 {
+  font-family: roboto_bold;
+  font-weight: normal !important;
+  padding: 0px;
+  border: 0px;
+  margin: 0px;
+}
+
+a, a:visited {
+  color: var(--a-txt);
+}
+
+body {
+  background-color: var(--main-bg);
+  color: var(--main-txt);
+  font-family: roboto_medium;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  overflow: overlay;
+  overflow-x: scroll;
+  /*overflow-y: scroll;*/
+  cursor: default;
+  width: 100vw;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-bg);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.lblue .light {
+  fill: var(--lblue-light);
+}
+.lblue .dark {
+  fill: var(--lblue-dark);
+}
+.yellow .light {
+  fill: var(--yellow-light);
+}
+.yellow .dark {
+  fill: var(--yellow-dark);
+}
+.orange .light {
+  fill: var(--orange-light);
+}
+.orange .dark {
+  fill: var(--orange-dark);
+}
+.blue .light {
+  fill: var(--blue-light);
+}
+.blue .dark {
+  fill: var(--blue-dark);
+}
+.green .light {
+  fill: var(--green-light);
+}
+.green .dark {
+  fill: var(--green-dark);
+}
+.red .light {
+  fill: var(--red-light);
+}
+.red .dark {
+  fill: var(--red-dark);
+}
+.purple .light {
+  fill: var(--purple-light);
+}
+.purple .dark {
+  fill: var(--purple-dark);
+}
+.background .light {
+  fill: var(--background-light);
+}
+.background .dark {
+  fill: var(--background-dark);
+}
+.ghost .light {
+  fill: var(--ghost-light);
+}
+.debug .light {
+  fill: var(--debug-light);
+}
+.debug .dark {
+  fill: var(--debug-dark);
+}
+.debug .check {
+  fill: var(--debug-check);
+}
+.disabled .light {
+  fill: var(--disabled-light);
+}
+.disabled .dark {
+  fill: var(--disabled-dark);
+}
+
+.tetris-stuff {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--board-scale) * 1);
+}
+
+.board-wrapper { 
+  height: auto;
+  width: auto;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+.side {
+  height: calc(var(--board-scale) * 4);
+}
+
+.side-wrapper h2 {
+  max-width: calc(var(--board-scale) * 4);
+  width: calc(var(--board-scale) * 4);
+  height: calc(var(--board-scale) * 1);
+}
+
+.template {
+  display: none;
+}
+
+.home {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: var(--main-bg);
+  text-align: center;
+  transition-duration: 250ms;
+  opacity: 1;
+  overflow-y: scroll !important;
+  overflow-y: hidden;
+  transition-duration: 250ms;
+}
+.home h1 {
+  text-align: center;
+  margin-top: 0.5em;
+  font-size: 2.25em;
+}
+.home h2 {
+  text-align: center;
+  margin-top: 0.5em;
+}
+.home h3 {
+  text-align: center;
+  margin-top: 0.5em;
+  color: var(--home-txt-2);
+}
+
+.button {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  background-color: var(--button-bg);
+  padding: 7px;
+  border-radius: 7px;
+  transition-duration: 250ms;
+  font-size: 1.25em;
+}
+
+.button.red {
+  background-color: var(--button-red-bg);
+}
+
+.button:hover {
+  background-color: var(--button-bg-hover);
+}
+
+.button.red:hover {
+  background-color: var(--button-red-bg-hover);
+}
+
+.divider {
+  background-color: var(--divider);
+  width: 100vw;
+  height: 1px;
+}
+
+.toggle {
+  height: 1.75em;
+}
+.toggle circle, .toggle rect {
+  transition-duration: 250ms;
+}
+.toggle .thumb {
+  fill: var(--toggle-thumb);
+  transform: translateX(0px);
+}
+.toggle.enabled .thumb {
+  transform: translateX(1px);
+}
+.toggle .background {
+  fill: var(--toggle-background);
+}
+.toggle.enabled .background {
+  fill: var(--toggle-background-enabled);
+}
+
+.settings {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  display: inline-block;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.setting h3 {
+  font-size: 1.25em;
+  margin: 0px;
+  margin-left: 5px;
+}
+
+.pausemenu {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow-y: scroll;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: var(--pause-bg);
+  transition-duration: 250ms;
+}
+
+.debugmode .pausemenu {
+  background-color: var(--pause-bg-debug);
+}
+
+.debug-stuff {
+  display: none;
+  text-align: center;
+}
+
+
+.debugmode .debug-stuff {
+  display: unset !important;
+}
+
+.debug-stuff h1 {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.debug-stuff .active-pieces {
+  display: flex;
+  gap: 20px;
+  width: 30vw;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+}
+
+.debug-stuff .active-pieces svg {
+  width: auto;
+  height: auto;
+  cursor: pointer;
+  transition-duration: 250ms;
+}
+
+.debug-stuff .active-pieces svg:hover {
+  transform: scale(1.1);
+}
+
+.debug-stuff .active-pieces svg > * {
+  pointer-events: none;
+}
+
+.secondary {
+  color: var(--home-txt-2);
+}
+
+.side-text {
+  font: normal 0.6px roboto_bold;
+  fill: var(--main-txt);
+}
+
+.gameover {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: var(--main-bg);
+  text-align: center;
+  transition-duration: 250ms;
+  overflow-y: scroll;
+}
+
+.gameover h1 {
+  margin-top: 0.5em;
+}
+
+.gameover h2.scoretm {
+  margin-top: 2em !important;
+  margin-bottom: 0em !important;
+  color: var(--home-txt-2);
+}
+
+h2.highscoretm {
+  margin-top: 1em !important;
+  margin-bottom: 3em !important;
+  font-size: 1.175em;
+  color: var(--home-txt-2);
+}
+
+.home h2.highscoretm {
+  margin-bottom: 1.5em;
+}
+
+.gameover h2 {
+  margin-top: 2em;
+}
+
+.replay-data {
+  background-color: var(--replay-data-bg);
+  border: 2px solid var(--replay-data-border);
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 10px;
+}
+.gameover .replay-data {
+  padding: 20px;
+  padding-right: 10px;
+}
+.replay-data p {
+  font-family: ubuntu_mono;
+  margin: 0px;
+  cursor: text;
+  max-width: 30vw;
+  max-height: 30vh;
+  word-break: break-all;
+  overflow-y: scroll !important;
+  padding: 20px;
+}
+.gameover .replay-data p {
+  padding: 0px;
+}
+.gameover .replay-stuff h2 {
+  margin-top: 1.5em;
+}
+.gameover .replay-stuff h2.button {
+  margin-top: 1em;
+}
+.gameover .replay-stuff h3 {
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+.home .replay-stuff h3 {
+  margin-top: 1em;
+}
+.home .replay-data p {
+  min-width: 1em;
+  min-height: 1em;
+  word-break: break-all;
+  max-width: 20vw;
+  max-height: 20vh;
+}
+
+.replay-error {
+  color: var(--error-txt) !important;
+  transition-duration: 250ms;
+}
+
+input {
+  background-color: var(--replay-data-bg);
+  border: 1px solid var(--replay-data-border);
+  font-size: 1.25em;
+  color: var(--main-txt);
+  width: 3em;
+  border-radius: 5px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="file"] {
+  width: fit-content;
+  background-color: var(--file-upload-bg);
+  border: 1px solid var(--replay-data-border);
+  color: var(--home-txt-2);
+  font-size: 1em;
+}
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--file-upload-button-bg);
+  color: var(--main-txt);
+  border: 1px solid var(--replay-data-bg);
+  margin: 5px;
+}
+
+
+.game-custom {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: var(--main-bg);
+  text-align: center;
+  transition-duration: 250ms;
+  overflow-y: scroll;
+}
+
+.game-custom h1 {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.colour-list, .value-list {
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  /*gap: 10px;*/
+}
+
+.colour, .value {
+  border: 1px solid var(--divider);
+  padding: 10px;
+}
+
+.colour p, .value p {
+  margin: 0px;
+  margin-top: 0.5em;
+  font-size: 1.1em;
+}
+
+.custom-css {
+  background-color: var(--replay-data-bg);
+  border: 2px solid var(--replay-data-border);
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 10px;
+}
+.custom-css p {
+  font-family: ubuntu_mono;
+  margin: 0px;
+  cursor: text;
+  max-width: 20vw;
+  max-height: 20vh;
+  min-width: 1em;
+  min-height: 1em;
+  word-break: break-all;
+  overflow-y: scroll !important;
+  padding: 20px;
+  padding-right: 10px;
+}
+
+
+.game-controls {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background: var(--main-bg);
+  text-align: center;
+  transition-duration: 250ms;
+  overflow-y: scroll;
+}
+
+.game-controls h1 {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.control-bunches {
+  display: flex;
+  width: 90vw;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 20em;
+  /* background: red; */
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+
+.control-bunches div {
+  /* background: blue; */
+  border: 1px solid var(--divider);
+  padding: 10px;
+}
+
+.controls-svg {
+  margin-top: 0.6em;
+  margin-bottom: 0.8em;
+}
+
+.controls-svg .key rect{
+  fill: transparent;
+  transition-duration: 250ms;
+  stroke-width: 2px;
+  stroke: var(--divider);
+}
+
+.controls-svg .key text {
+  font: bold 30px roboto_medium;
+  fill: var(--control-txt);
+}
+
+.controls-svg .key.active rect {
+  fill: var(--control-key-active);
+}
+
+.control-txt {
+  color: var(--control-txt2);
+}
+
+.control-bunches table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.control-bunches table tr th, .control-bunches table tr td {
+  border: 1px solid var(--divider);
+  padding: 5px;
+  gap: 0px;
+}

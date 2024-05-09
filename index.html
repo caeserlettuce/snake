@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>snake</title>
+    <link rel="icon" type="image/svg" href="assets/chili.svg">
+
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <div class="snake-stuff">
+
+      <svg class="board-wrapper" viewBox="0 0 10 20">
+        <g class="hold-board">
+          <g class="background">
+            <!--the background mmmmmm-->
+          </g>
+          <g class="active-hold-board">
+            <!--where the actual stuff is-->
+          </g>
+          <text x="0" y="10" class="side-text">hold</text>
+        </g>
+        <g class="board">
+          <g class="background">
+            <!--the background mmmmmm-->
+          </g>
+          <g class="active-board">
+            <!--where the actual stuff is-->
+          </g>
+        </g>
+        <g class="next-board">
+          <g class="background">
+            <!--the background mmmmmm-->
+          </g>
+          <g class="active-next-board">
+            <!--where the actual stuff is-->
+          </g>
+        </g>
+
+        <text x="0" y="1" class="side-text score">score:</text>
+        <g class="template">
+          <g style="transform: translate(0px, 0px)" class="block">
+            <rect x="0" y="0" width="1" height="1" class="dark"/>
+            <rect x="0.1" y="0.1" width="0.8" height="0.8" class="light"/>
+          </g>
+          <g style="transform: translate(0px, 0px)" class="ghost block">
+            <rect x="0" y="0" width="1" height="0.1" class="light"/>
+            <rect x="0" y="0.9" width="1" height="0.1" class="light"/>
+            <rect x="0" y="0" width="0.1" height="1" class="light"/>
+            <rect x="0.9" y="0" width="0.1" height="1" class="light"/>
+          </g>
+          <g style="transform: translate(0px, 0px)" class="debug block">
+            <rect x="0" y="0" width="1" height="0.1" />
+            <rect x="0" y="0.9" width="1" height="0.1" />
+            <rect x="0" y="0" width="0.1" height="1" />
+            <rect x="0.9" y="0" width="0.1" height="1" />
+          </g>
+          <rect class="dark" x="0" y="0" width="10" height="20" />
+          <rect class="light" x="0" y="0" width="0.1" height="20" />
+        </g>
+        
+
+      </svg>
+    </div>
+
+    <div class="home">
+      <h1>snake</h1>
+      <h3>its snake where you slither everywhere</h3>
+
+      <p class="button" onclick="start_game_button()">start game</p>
+
+      <h2 class="highscoretm">highscore: <span class="score"></span></h2>
+
+      <div class="divider"></div>
+
+      <h2>settings</h2>
+      <div class="template">
+        <svg class="toggle" viewBox="0 0 2 1" onclick="">
+          <circle cx="0.5" cy="0.5" r="0.5" class="background" />
+          <circle cx="1.5" cy="0.5" r="0.5" class="background" />
+          <rect x="0.5" y="0" width="1" height="1" class="background" />
+          <circle cx="0.5" cy="0.5" r="0.5" class="thumb" />
+        </svg>
+      </div>
+      <div class="settings">
+
+      </div>
+      
+      <p class="button" onclick="open_custom()">customise the game MORE!</p>
+
+      <p class="button" onclick="open_controls()">controls</p>
+
+      <div class="replay-stuff">
+        <div class="divider"></div>
+        <h1>replay games</h1>
+        <!-- <h3>paste the game data below<br>(data of your previous game may automatically be in here)</h3>
+
+        <div class="replay-data">
+          <p contenteditable></p>
+        </div> -->
+
+        <h3>upload your replay file here and hit play replay</h3>
+        <br>
+        <input type="file" id="replayfile-input" accept=".txt">
+<br>
+        <h3>replay speed:</h3>
+        <br>
+        <input class="replay-speed" type="number" min="0.25" max="100" value="1">
+
+        <p class="button" onclick="play_replay()">play replay</p>
+
+        <h3 class="replay-error" style="opacity: 0; display: none;">an error occurred playing the replay.</h3>
+
+      </div>
+
+      <div class="two-player">
+        <div class="divider"></div>
+        <h1>two player game [indev]</h1>
+
+        <h3>now you can play against your friend or enemy or a stranger
+        <br><br>confused about controls? check the controls page (up further on the page)
+        </h3>
+
+        <p class="button" onclick="start_2p_game()">start two player game</p>
+        
+      </div>
+
+    </div>
+
+    <div class="pausemenu" style="display: none; opacity: 0;">
+      <h1>game is paused!</h1>
+      <h3>press ESC to unpause</h3>
+      <br>
+      <p class="button" onclick="game_over()">end game</p>
+      <div class="debug-stuff">
+        <br>
+        <h1>you are in debug mode!</h1>
+        <h3 class="secondary">this means you get to do things that in normal mode you usually cant do,<br>
+          like you can use your arrow keys to move the piece around while paused.<br>
+          arrow keys like usual, but use the r key to rotate instead of the up key</h3>
+          
+
+        <!-- <p class="button" onclick="undo_move()">undo last game update</p>
+        <h3 class="secondary">this will not undo your last move, (at least not immediately).<br>this will undo the last game update. you may have to click it a bunch to undo<br>the last move.</h3> -->
+          <br><br>
+        <h2>set active piece</h2>
+        <h3 class="secondary">click to change your active piece</h3>
+        <div class="active-pieces">
+          <div class="template">
+            <svg viewBox="0 0 10 10"></svg>
+          </div>
+          
+
+        </div>
+      </div>
+    </div>
+
+    <div class="gameover" style="display: none; opacity: 0;">
+      <h1>game over!</h1>
+      <h2 class="scoretm">your score was: <span class="score"></span></h2>
+      <h2 class="highscoretm">highscore: <span class="score"></span></h2>
+      <div class="divider"></div>
+      <div class="replay-section replay-stuff">
+        <h2>game replay:</h2>
+<!--         
+        <div class="replay-data">
+          <p>hi guys </p>
+        </div>
+        <h3>you can copy this data and then paste it in the replay player thingy on the home page</h3> -->
+
+        <h2 class="button" onclick="download_game_replay()">download replay save</h2>
+        <h3 class="secondary">you can upload this file on the home page and replay this game</h3>
+
+
+      </div>
+      <div class="divider"></div>
+      <h1>ok</h1>
+      <p class="button" onclick="start_game_button()">play again</p>
+      <p class="button" onclick="show_start_screen()">go to home page</p>
+    </div>
+
+
+    <div class="game-custom" style="display: none; opacity: 0;">
+      <h1>game customisation</h1>
+      <h2 class="secondary">custom the game to your heart's content</h2>
+      <p class="button" onclick="close_custom()">save & close settings</p>
+      <p class="button red" onclick="reset_settings()">reset to defaults</p>
+      <div class="divider" style="margin-top: 2em; margin-bottom: 0.5em"></div>
+      <h2>colour customisation</h2>
+      <div class="colour-list">
+        <div class="template">
+          <div class="colour">
+            <input type="color">
+            <p>hello</p>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <h2 style="margin-top: 0.3em;">value customisation</h2>
+      <div class="value-list">
+        <div class="template">
+          <div class="value">
+            <input type="number">
+            <p>hello</p>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <h1>custom css</h1>
+      <div class="custom-css">
+        <p contenteditable></p>
+      </div>
+    </div>
+
+    <div class="game-controls" style="display: none; opacity: 0;">
+      <h1>game controls</h1>
+      <h3 class="secondary">here's all the buttons you can press for all the different things</h3>
+      <p class="button" onclick="close_controls()">close controls</p>
+
+      <div class="divider"></div>
+      <h2 style="margin-top: 0.5em;">normal game</h2>
+      <br>
+      <div class="control-bunches">
+        
+        <div>
+          <svg class="controls-svg" viewBox="0 0 604 304" style="height: 12.5em;">
+            <g style="transform: translate(0px, 0px)" class="key" key="escape">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="28" y="62">esc</text>
+            </g>
+            <g style="transform: translate(0px, 200px)" class="key" key="shiftleft">
+              <rect x="2" y="2" width="200" height="100"/>
+              <text x="65" y="64">shift</text>
+            </g>
+            <g style="transform: translate(300px, 100px)" class="key" key="q">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="42" y="58">q</text>
+            </g>
+            <g style="transform: translate(400px, 100px)" class="key" key="w">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="40" y="58">w</text>
+            </g>
+            <g style="transform: translate(300px, 200px)" class="key" key="a">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="43" y="60">a</text>
+            </g>
+            <g style="transform: translate(400px, 200px)" class="key" key="s">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="43" y="60">s</text>
+            </g>
+            <g style="transform: translate(500px, 200px)" class="key" key="d">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="43" y="60">d</text>
+            </g>
+
+
+          </svg>
+          <h2 class="control-txt" style="margin-top: 0.25em; margin-bottom: 0.5em;">(in multiplayer, this is player 1)</h2>
+          <table class="control-txt">
+            <tr>
+              <th>key(s)</th>
+              <th>action</th>
+            </tr>
+            <tr>
+              <td>a & d</td>
+              <td>move left & right</td>
+            </tr>
+            <tr>
+              <td>w</td>
+              <td>rotate piece</td>
+            </tr>
+            <tr>
+              <td>s</td>
+              <td>move piece down</td>
+            </tr>
+            <tr>
+              <td>q</td>
+              <td>hold piece</td>
+            </tr>
+            <tr>
+              <td>esc</td>
+              <td>pause game</td>
+            </tr>
+            <tr>
+              <td>shift</td>
+              <td>slam down</td>
+            </tr>
+          </table>
+        </div>
+
+        <div>
+          <svg class="controls-svg" viewBox="0 0 704 304" style="height: 12.5em;">
+            <g style="transform: translate(0px, 0px)" class="key" key="escape">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="28" y="62">esc</text>
+            </g>
+            <g style="transform: translate(200px, 100px)" class="key" key="arrowup">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="45" y="60">↑</text>
+            </g>
+            <g style="transform: translate(100px, 200px)" class="key" key="arrowleft">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="38" y="64">←</text>
+            </g>
+            <g style="transform: translate(200px, 200px)" class="key" key="arrowdown">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="45" y="66">↓</text>
+            </g>
+            <g style="transform: translate(300px, 200px)" class="key" key="arrowright">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="38" y="64">→</text>
+            </g>
+            <g style="transform: translate(500px, 100px)" class="key" key="c">
+              <rect x="2" y="2" width="100" height="100"/>
+              <text x="43" y="60">c</text>
+            </g>
+            <g style="transform: translate(500px, 200px)" class="key" key="space">
+              <rect x="2" y="2" width="200" height="100"/>
+              <text x="63" y="63">space</text>
+            </g>
+          </svg>
+          <h2 class="control-txt" style="margin-top: 0.25em; margin-bottom: 0.5em;">(in multiplayer, this is player 2)</h2>
+          <table class="control-txt">
+            <tr>
+              <th>key(s)</th>
+              <th>action</th>
+            </tr>
+            <tr>
+              <td>left & right arrows</td>
+              <td>move left & right</td>
+            </tr>
+            <tr>
+              <td>up arrow</td>
+              <td>rotate piece</td>
+            </tr>
+            <tr>
+              <td>down arrow</td>
+              <td>move piece down</td>
+            </tr>
+            <tr>
+              <td>c</td>
+              <td>hold piece</td>
+            </tr>
+            <tr>
+              <td>esc</td>
+              <td>pause game</td>
+            </tr>
+            <tr>
+              <td>space</td>
+              <td>slam down</td>
+            </tr>
+          </table>
+        </div>
+        
+      </div>
+      
+      
+    </div>
+
+    <style class="funny-css"></style>
+    <style class="funny-css2"></style>
+    <style class="funny-css3"></style>
+    <style class="funny-css4"></style>
+
+    <script src="db.js"></script>
+    <script src="keyboard.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
