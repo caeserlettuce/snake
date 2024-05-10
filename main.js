@@ -1,13 +1,12 @@
 var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var mobile = false;
-var active_board = document.querySelector(".active-board");
+var active_board = document.querySelector(".board");
 var static_bounds = [];
 var active_bounds = [];
 var setting_choices = {};
 var show_debug = false;
 var show_ghost = true;
-var show_hold = true;
 var show_next = true;
 var show_replay = true;
 var board_width = 10;
@@ -127,7 +126,7 @@ for (i in customs) {
 
 
 function save_settings() {
-  localStorage.setItem("dapuglol-tetris", JSON.stringify(setting_choices));
+  localStorage.setItem("dapuglol-snake", JSON.stringify(setting_choices));
 }
 
 if (!setting_choices["customs"]) {
@@ -303,91 +302,6 @@ function clear_check_debug() {
   }
 }
 
-function display_ghost_block(data) {
-  if (show_ghost == true) {
-    var data_new = copy_json(data);
-    var ghost_height = find_slam_height(data);
-    data_new["loc"][1] = ghost_height
-    var ghost_points = get_piece_points(data_new);
-    
-    for (i in ghost_points) {
-      var node = document.querySelector(".template .ghost").cloneNode(true);
-      node.style = `transform: translate(${ghost_points[i][0]}px, ${ghost_points[i][1]}px);`;
-      active_board.appendChild(node);
-    }
-
-  }
-}
-
-function check_lines() {
-
-  if (replay_active == false) {
-
-    var lines = {};
-    var lines_clear = [];
-    
-    for (i in gamesave["static"]) {
-      var x = gamesave["static"][i]["loc"][0];
-      var y = gamesave["static"][i]["loc"][1];
-  
-      if (!lines[y]) {
-        lines[y] = [];
-      }
-      lines[y].push(x);
-    }
-    for (i in lines) {
-      if (lines[i].length == board_width) {
-        lines_clear.push(parseInt(i));
-      }
-    }
-    console.log(lines);
-    console.log(lines_clear);
-
-    var lines_clear_shift = {};
-    lines_clear.sort();
-    lines_clear.reverse();
-
-    for (i in lines_clear) {
-      lines_clear_shift[lines_clear[i]] = parseInt(i) + 1;
-    }
-    console.log("shifts:", lines_clear_shift);
-
-    var new_static = [];
-    var lines_cleared = lines_clear.length;
-  
-    for (i in gamesave["static"]) {
-      var y = gamesave["static"][i]["loc"][1];
-      if (lines_clear.includes(y)) {
-        //console.log(y);
-        gamesave["score"] += 1;
-
-        if (gamesave["score"] % 100 == 0 && ( gamesave["score"] >= 100 && gamesave["score"] <= 1000 ) ) {
-          start_speed = start_speed / speed_increase;
-          game_speed(start_speed);
-        }
-  
-        // do NOT add it because it is being removed
-  
-      } else {
-        var new_piece_entry = copy_json(gamesave["static"][i]);
-        var shift = 0;
-        for (e in lines_clear_shift) {
-          if (y < e) {
-            if (lines_clear_shift[e] > shift) {
-              shift = lines_clear_shift[e];
-            }
-          }
-        }
-        console.log("line:", y, "shift:", shift);
-        new_piece_entry["loc"][1] += shift;
-        new_static.push(new_piece_entry);
-      }
-    }
-    gamesave["static"] = copy_json(new_static);
-  }
-
-}
-
 function display_game(game) {
   // for (i in game["pieces"]) {
   //   display_shape(game["pieces"][i]);
@@ -401,265 +315,11 @@ function display_game(game) {
     check_lines();
   }
 
-  for (i in game["static"]) {
-    var x = game["static"][i]["loc"][0];
-    var y = game["static"][i]["loc"][1];
-    var node = document.querySelector(".template .block").cloneNode(true);
-    node.classList.add(game["static"][i]["type"]);
-    node.style = `transform: translate(${x}px, ${y}px);`;
-    active_board.appendChild(node);
-  }
+}
+
+
+function check_bounds() {
   
-  if (replay_active == false) {
-    display_ghost_block(game["active piece"]);
-  }
-  display_shape(game["active piece"]);
-  
-
-  // hold board
-  if (game["hold"] != false) {
-    //console.log("hi")
-    document.querySelector(".active-hold-board").innerHTML = "";
-    var hp_points = get_piece_points(game["hold"]);
-    var hp_bounds = get_piece_max_bounds(game["hold"]);
-    var x_translate = (side_size / 2) - ( (hp_bounds[0] + 1) / 2);
-    var y_translate = (side_size / 2) - ( (hp_bounds[1] + 1) / 2);
-    console.log(hp_bounds[0], hp_bounds[1]);
-    
-    for (i in hp_points) {
-      var x = hp_points[i][0] + x_translate;
-      var y = hp_points[i][1] + y_translate;
-      var node = document.querySelector(".template .block").cloneNode(true);
-      if (just_held == true) {
-        node.classList.add("disabled");
-      } else {
-        node.classList.add(game["hold"]["type"]);
-      }
-      node.style = `transform: translate(${x}px, ${y}px);`;
-      document.querySelector(".active-hold-board").appendChild(node);
-    }
-  }
-
-  // next pieces
-
-  document.querySelector(".active-next-board").innerHTML = "";
-  for (d in game["next pieces"]) {
-    var np_points = get_piece_points(game["next pieces"][d]);
-    var np_bounds = get_piece_max_bounds(game["next pieces"][d]);
-    var x_translate = (side_size / 2) - ( (np_bounds[0] + 1) / 2);
-    var y_translate = (next_height / 2) - ( (np_bounds[1] + 1) / 2) + (next_height * d);
-    //console.log(np_bounds[0], np_bounds[1]);
-    
-    //console.log(JSON.stringify(game["next pieces"][d]))
-
-    for (e in np_points) {
-      var x = np_points[e][0] + x_translate;
-      var y = np_points[e][1] + y_translate;
-      var node = document.querySelector(".template .block").cloneNode(true);
-      node.classList.add(game["next pieces"][d]["type"]);
-      node.style = `transform: translate(${x}px, ${y}px);`;
-      document.querySelector(".active-next-board").appendChild(node);
-    }
-
-
-  }
-
-  if (game["debug"] == true) {
-    document.querySelector(".board-wrapper .side-text.score").innerHTML = `score: ${game["score"]} [debug]`;
-  } else {
-    document.querySelector(".board-wrapper .side-text.score").innerHTML = `score: ${game["score"]}`;
-  }
-  
-
-
-
-
-  if (show_debug == true && replay_active == false) {
-    display_ghost_debug(active_bounds, true);
-    display_ghost_debug(static_bounds, false);
-  }
-
-  if (replay_active == false) {
-    // if (setting_choices["highscore"] < game["score"]) {
-    //   setting_choices["highscore"] = game["score"];
-    // }
-    // save_settings();
-  }
-
-
-
-  
-  // MAKE SURE THIS STAYS AT THE END!!!
-  
-  if (replay_active == false) {
-    if (show_replay == true) {
-      game_replay["log"].push({
-        "time": new Date(),
-        "game": copy_json(game)
-      });
-    }
-    if (reset_undo_history == true) {
-      console.log("ya");
-      undo_history = [...game_replay["log"]];
-    }
-  }
-  // DONT PUT ANYTHING ELSE BELOW HERE!!!!!  
-
-  // btoa: encode to base64
-  // atob: decode to string
-
-}
-
-function piece_move(piece_in, direction) {
-  var piece_out = {...piece_in};
-  piece_out["loc"] = [ piece_in["loc"][0] + direction[0], piece_in["loc"][1] + direction[1] ];
-  return piece_out
-}
-
-function piece_rotate(piece_in) {
-  var piece_out = {...piece_in};
-  var max_rot = pieces[piece_in["type"]].length;
-  if (piece_in["rot"] + 2 > max_rot) {
-    piece_out["rot"] = 0;
-  } else {
-    piece_out["rot"] += 1;
-  }
-  return piece_out
-}
-
-function get_piece_points(data) {
-  //console.log(data);
-  var type = data["type"]
-  var loc = data["loc"];
-  var rot = data["rot"];
-  var raw_points = [...pieces[type][rot]];
-  var points_out = [];
-  for (i in raw_points) {
-    //console.log("for raw_points:", i);
-    //console.log(raw_points[i][0], loc[0]);
-    //console.log(raw_points[i][1], loc[1]);
-    var the_set = [
-      raw_points[i][0] + loc[0],  // transform x
-      raw_points[i][1] + loc[1]   // transform y
-    ]
-    points_out.push(the_set);
-  }
-  //console.log(points_out);
-  return points_out
-}
-
-function get_piece_max_bounds(data) {
-  var type = data["type"]
-  var loc = data["loc"];
-  var rot = data["rot"];
-  var raw_points = [...pieces[type][rot]];
-  var points_out = [0, 0];
-  for (i in raw_points) {
-    if (raw_points[i][0] > points_out[0]) {
-      points_out[0] = raw_points[i][0];
-    }
-    if (raw_points[i][1] > points_out[1]) {
-      points_out[1] = raw_points[i][1];
-    }
-  }
-  return points_out
-}
-
-function add_static(data) { // add piece to static points
-  var piece_points = get_piece_points(data);
-  console.log({...gamesave})
-  console.log([...piece_points]);
-  for (i in piece_points) {
-    gamesave["static"].push({"type": `${data["type"]}`, "loc": [...piece_points[i]] });
-  }
-}
-
-
-function check_bounds(piece) {
-  clear_check_debug();
-  var final = true;
-  var vertical_final = true;
-  static_bounds = [];
-  active_bounds = [];
-
-    
-  var piece_points = get_piece_points(piece);
-  for (e in piece_points) {
-    active_bounds.push(piece_points[e])
-  }
-
-  for (i in gamesave["static"]) {
-    static_bounds.push( [...gamesave["static"][i]["loc"]] );
-  }
-
-  if (show_debug == true) {
-    for (g in piece_points) {
-      var node = document.querySelector(".template .debug").cloneNode(true);
-      node.style = `transform: translate(${piece_points[g][0]}px, ${piece_points[g][1]}px)`
-      for (i in node.querySelectorAll("rect")) {
-        var shape = node.querySelectorAll("rect")[i]
-        if (is_element(shape)) {
-          //console.log(shape)
-          shape.classList.add("check");
-        }
-      }
-      active_board.appendChild(node);
-    }
-  }
-
-  for (i in active_bounds) {
-    var loc_tm = active_bounds[i];
-    //console.log(loc_tm);
-
-    if (inlist(loc_tm, static_bounds) == true) {
-      final = false
-    }
-    if (loc_tm[0] < 0 || loc_tm[0] > (board_width - 1)) {
-      final = false
-    }
-    if (loc_tm[1] < 0 || loc_tm[1] > (board_height - 1)) {
-      final = false
-    }
-
-  }
-
-  return final
-}
-
-function new_piece(first, second) {
-  if (first != true) {
-    add_static(gamesave["active piece"]);
-    just_held = false;
-  }
-  var the_piece;
-  var piece_good = false;
-  while (piece_good == false) {
-    the_piece = rand(piece_types);
-    console.log("checking piece...");
-    if (gamesave["next pieces"].length >= 1) {
-      if (the_piece == gamesave["next pieces"][gamesave["next pieces"].length - 1]["type"]) {
-        console.log("retrying piece...");
-      } else {
-        console.log("piece good");
-        piece_good = true;
-      }
-    } else {
-      console.log("piece good");
-      piece_good = true;
-    }
-    
-  }
-  console.log(the_piece);
-  console.log({"type": `${the_piece}`, "rot": 0, "loc": [0,0]});
-  
-  gamesave["next pieces"].push({"type": `${the_piece}`, "rot": 0, "loc": [0,0]});
-  console.log(gamesave["next pieces"])
-  gamesave["active piece"] = copy_json(gamesave["next pieces"][0]);
-  if (second != true) {
-    gamesave["next pieces"].splice(0, 1);
-  }
-  var piece_bounds = get_piece_max_bounds(gamesave["active piece"]);
-  gamesave["active piece"]["loc"][0] = Math.floor(board_width / 2) - (Math.floor(piece_bounds[0] / 2) + 1 ); // put it at the center
 }
 
 
@@ -684,7 +344,7 @@ function game_over() {
     localstorage["highscore"] = gamesave["score"];
     new_hs = true;
   }
-  localStorage.setItem("dapuglol-tetris", JSON.stringify(localstorage));
+  localStorage.setItem("dapuglol-snake", JSON.stringify(localstorage));
   
   document.querySelector(".scoretm .score").innerHTML = gamesave["score"];
   document.querySelector(".gameover .highscoretm .score").innerHTML = localstorage["highscore"];
@@ -741,39 +401,7 @@ function game_speed(speed) {
 
 function start_game() {
 
-  var date_now = new Date();
-  game_paused = false;
-  if (typeof setting_choices["customs"]["stsp"] == typeof 1) {
-    start_speed = setting_choices["customs"]["stsp"];
-  }
-  gamesave = {
-    "static": [],
-    "active piece": {},
-    "next pieces": [],
-    "hold": false,
-    "score": 0,
-    "width": board_width,
-    "height": board_height
-  }
-  game_replay = {
-    "name": `${date_now.getFullYear()}-${doublefy(date_now.getMonth() + 1)}-${doublefy(date_now.getDate())} ${doublefy(date_now.getHours())}:${doublefy(date_now.getMinutes())}:${doublefy(date_now.getSeconds())}`,
-    "start": date_now,
-    "custom settings": copy_json(setting_choices),
-    "log": []
-  }
-  for (let i = 0; i < next_amount; i++) {
-    new_piece(true, true);
-  }
-
-  //add_static({"type": "lblue", "loc": [0,19], "rot": 0 })
-  board_size(gamesave, board_width, board_height);
-  //new_piece(true);
-  game_status = true;
-  game_speed(start_speed);
-  
-  clear_active_board();
-  display_game(gamesave);
-
+ 
 }
 
 function start_game_button() {
@@ -826,7 +454,7 @@ function toggle_button(id) {
   save_settings();
 }
 
-var localstorage = localStorage.getItem("dapuglol-tetris");
+var localstorage = localStorage.getItem("dapuglol-snake");
 
 try {
   localstorage = JSON.parse(localstorage);
@@ -862,7 +490,7 @@ for (i in localstorage) {
 
 if (!localstorage["highscore"]) {
   localstorage["highscore"] = 0;
-  localStorage.setItem("dapuglol-tetris", JSON.stringify(localstorage));  
+  localStorage.setItem("dapuglol-snake", JSON.stringify(localstorage));  
 }
 document.querySelector(".home .highscoretm .score").innerHTML = localstorage["highscore"];
 
@@ -1120,73 +748,33 @@ document.addEventListener('keydown', (event) => {
 
   if (game_status == true) {
     if (keyid == 27) {        // esc
-      clearTimeout(timeouts["gp"]);
-      if (game_paused == false) {
-        document.querySelector(".pausemenu").style.display = "";
-        timeouts["gp"] = setTimeout( () => {
-          document.querySelector(".pausemenu").style.opacity = "1";
-        }, 10);
-        game_paused = true;
-        game_replay["log"].push({
-          "time": new Date(),
-          "game": copy_json(gamesave),
-          "paused": true
-        });
-      } else if (game_paused == true) {
+      
+      
 
-        document.querySelector(".pausemenu").style.opacity = "0";
-        timeouts["gp"] = setTimeout( () => {
-          document.querySelector(".pausemenu").style.display = "none";
-        }, 260);
-        clear_active_board();
-        display_game(gamesave);
-        game_paused = false;
-        game_replay["log"].push({
-          "time": new Date(),
-          "game": copy_json(gamesave),
-          "unpaused": true
-        });
-      }
     } else if (keyid == 38) { // up
-      if (game_paused == false && replay_active != true) {
-        user_rotate();
-      }
+     
+      
+
     } else if (keyid == 32) { // space
-      if (game_paused == false && replay_active != true) {
-        user_slam();
-      }
+      
+      
+
     } else if ( (keyid == 67 || keyid == 81 ) && replay_active != true) { // c or q
-      if (game_paused == false) {
-        if (show_hold == true) {
-          user_hold();
-          clear_active_board();
-          display_game(gamesave);
-        }
-      }
+      
+
+
     } else if (keyid == 82 && replay_active != true) { // r for rotate
-      if (game_paused == false || (game_paused == true && show_debug == true)) {
-        user_rotate();
-      }
+      
+
+
     }  else if (keyid == 13) {  // enter
-      if (game_paused == true) {
-        game_over();
-      }
+      
+
+
     }
   } else {
     if (keyid == 27) {  // esc
-      if (replay_active == true) {
-        end_replay();
-      } else if (custom_open == true) {
-        close_custom();
-      } else if (game_end == true) {
-        show_start_screen();
-      } else if (controls_open == true) {
-        close_controls();
-      }
-    } else if (keyid == 13) { // enter
-      if (custom_open == false) {
-        start_game_button();
-      }
+      
     }
   }
 
@@ -1511,7 +1099,7 @@ function apply_settings() {
 }
 
 function reset_settings() {
-  localStorage.setItem("dapuglol-tetris", "");
+  localStorage.setItem("dapuglol-snake", "");
   window.location.reload();
 }
 
@@ -1585,7 +1173,7 @@ function download_game_replay() {
   var link = document.createElement("a");
   var file = new Blob([encoded_replay], { type: 'text/plain' });
   link.href = URL.createObjectURL(file);
-  link.download = `tetris_replay_${game_replay["name"]}.txt`;
+  link.download = `snake_replay_${game_replay["name"]}.txt`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
